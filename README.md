@@ -36,7 +36,7 @@ Kalimantan peat · 01 of 11
 
 Self-paced. Target: the whole project in about a week.
 
-- [ ] Milestone 1: Foundation. The repository installs as a package, pytest runs, the rules are set.
+- [x] Milestone 1: Foundation. The repository installs as a package, pytest runs, the rules are set.
 - [ ] Milestone 2: Problem defined. Question, sources, exact answers and checks written before any code.
 - [ ] Milestone 3: Hydraulics. Manning, critical depth and the weir law, tested.
 - [ ] Milestone 4: Exact answers. Ritter, a manufactured steady flow, the GVF profile and the pool drawdown, each tested against its equations.

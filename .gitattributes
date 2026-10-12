@@ -1,0 +1,6 @@
+# Store text files with LF line endings, on Windows too
+* text=auto eol=lf
+
+# Never touch binary results
+*.png binary
+*.gif binary

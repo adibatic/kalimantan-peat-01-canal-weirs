@@ -4,6 +4,29 @@ How far upstream does an overflow weir raise a peatland canal, and how does its 
 
 Kalimantan peat · 01 of 11
 
+## Setup
+
+    git clone https://github.com/adibatic/kalimantan-peat-01-canal-weirs.git
+    cd kalimantan-peat-01-canal-weirs
+    conda env create -f environment.yml
+    conda activate peat01
+    python -m pip install --no-deps -e .
+    pytest
+
+## Environment
+
+| Item | Value |
+|---|---|
+| OS | Microsoft Windows 11 Home Single Language |
+| CPU | AMD Ryzen 7 6800HS Creator Edition |
+| RAM | 28 GB |
+| conda | 26.7.2 |
+| Python | 3.14.8 |
+| NumPy | 2.5.4 |
+| SciPy | 1.18.1 |
+| Matplotlib | 3.11.2 |
+| pytest | 9.1.1 |
+
 ## Progress
 
 Self-paced. Target: the whole project in about a week.

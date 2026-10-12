@@ -27,6 +27,11 @@ Kalimantan peat · 01 of 11
 | Matplotlib | 3.11.2 |
 | pytest | 9.1.1 |
 
+## Agent log
+
+| Date | What the agent did wrong | How I caught it | Rule added to CLAUDE.md |
+|---|---|---|---|
+
 ## Progress
 
 Self-paced. Target: the whole project in about a week.

@@ -32,6 +32,15 @@ Kalimantan peat · 01 of 11
 | Date | What the agent did wrong | How I caught it | Rule added to CLAUDE.md |
 |---|---|---|---|
 
+## Problem
+
+A rectangular canal drains a peat dome. A fixed-crest overflow weir holds water back.
+
+1. How far upstream does the weir raise the water? Measured as the length over which the depth is more than 5 cm above normal depth.
+2. How does the outflow change as the level falls? With and without the weir, when the inflow stops.
+
+The canal is chosen for illustration, not measured: width 3 m, bed slope 2e-4, Manning n = 0.03, discharges 0.1 to 1.2 m³/s, crests 0.5 to 1.5 m above the bed. Results are properties of this model canal, not of any real canal.
+
 ## Progress
 
 Self-paced. Target: the whole project in about a week.

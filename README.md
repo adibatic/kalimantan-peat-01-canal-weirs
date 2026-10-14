@@ -56,6 +56,20 @@ The canal is chosen for illustration, not measured: width 3 m, bed slope 2e-4, M
 | ☐ | Audusse, E., et al. (2004). *SIAM J. Sci. Comput.* 25(6). | Hydrostatic reconstruction |
 | ☐ | Toro, E. F. (2001). *Shock-Capturing Methods for Free-Surface Shallow Flows.* Wiley. | MUSCL, minmod, wave speeds |
 
+## Exact answers
+
+| Check | Exact answer | Source |
+|---|---|---|
+| Lake at rest over a bump | velocity stays zero | definition |
+| Volume | stored change = inflow - outflow | conservation of mass |
+| Dam break onto a dry bed | Ritter's solution | Ritter 1892, SWASHES |
+| Steady flow with friction | a chosen depth h(x); the bed derived from it | MacDonald et al. 1997, SWASHES |
+| Order of accuracy | 1 (first-order scheme), 2 (second-order scheme) | the schemes' design |
+| Weir at steady state | outflow = inflow, head = rating curve | weir law (Chow) |
+| Backwater length | GVF integration from the weir upstream | Chow |
+| Pool emptying over a weir | H(t) = H0 / (1 + C √H0 t / 2L)² | derived from the weir law |
+| Pool kept below the crest | width × ∫ max(crest - z, 0) dx | geometry |
+
 ## Progress
 
 Self-paced. Target: the whole project in about a week.

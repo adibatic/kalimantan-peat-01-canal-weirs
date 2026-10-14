@@ -55,3 +55,19 @@ def froude(h, q):
     """Froude number u / sqrt(G h) with u = q / h."""
     h = np.asarray(h, dtype=float)
     return q / (h * np.sqrt(G * h))
+
+
+def weir_unit_discharge(level, crest, cd=1.0):
+    """Free overflow per metre of crest for a water level above the crest.
+
+    level and crest are elevations (m); the head is level - crest, zero when
+    the water is below the crest. cd scales the ideal law (cd = 1).
+    The approach velocity is neglected and the weir is never drowned.
+    """
+    head = np.maximum(np.asarray(level, dtype=float) - crest, 0.0)
+    return cd * WEIR_COEFF * head**1.5
+
+
+def weir_head(q, cd=1.0):
+    """Head over the crest that passes q; the inverse of weir_unit_discharge."""
+    return (q / (cd * WEIR_COEFF)) ** (2.0 / 3.0)

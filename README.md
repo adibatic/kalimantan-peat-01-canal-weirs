@@ -41,6 +41,21 @@ A rectangular canal drains a peat dome. A fixed-crest overflow weir holds water 
 
 The canal is chosen for illustration, not measured: width 3 m, bed slope 2e-4, Manning n = 0.03, discharges 0.1 to 1.2 m³/s, crests 0.5 to 1.5 m above the bed. Results are properties of this model canal, not of any real canal.
 
+## Sources
+
+☐ = equation not yet checked against my own copy; ☑ = checked.
+
+| | Source | Used for |
+|---|---|---|
+| ☐ | Chow, V. T. (1959). *Open-Channel Hydraulics.* McGraw-Hill. | Manning's equation, critical flow, gradually varied flow, broad-crested weir |
+| ☐ | Chaudhry, M. H. (2008). *Open-Channel Flow* (2nd ed.). Springer. | Saint-Venant equations, dam break |
+| ☐ | Ritter, A. (1892). Die Fortpflanzung der Wasserwellen. *Zeitschrift des Vereines Deutscher Ingenieure* 36. | Dam break on a dry bed |
+| ☐ | Delestre, O., et al. (2013). SWASHES. *Int. J. Numer. Meth. Fluids* 72(3), 269–300. doi:10.1002/fld.3741 | Ritter and MacDonald-type benchmarks |
+| ☐ | MacDonald, I., et al. (1997). Analytic benchmark solutions for open-channel flows. *J. Hydraul. Eng.* 123(11). | Manufactured steady flow with friction |
+| ☐ | Harten, A., Lax, P. D., van Leer, B. (1983). *SIAM Review* 25(1). | HLL flux |
+| ☐ | Audusse, E., et al. (2004). *SIAM J. Sci. Comput.* 25(6). | Hydrostatic reconstruction |
+| ☐ | Toro, E. F. (2001). *Shock-Capturing Methods for Free-Surface Shallow Flows.* Wiley. | MUSCL, minmod, wave speeds |
+
 ## Progress
 
 Self-paced. Target: the whole project in about a week.

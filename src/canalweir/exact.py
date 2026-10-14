@@ -76,3 +76,48 @@ class SteadyBenchmark:
                           epsabs=1e-14, epsrel=1e-13)[0]
             z[k], start = total, x[k]
         return z
+
+
+def backwater_profile(q, slope, n, crest_height, length, width=None, cd=1.0,
+                      points=2001):
+    """Steady depth upstream of a weir, by integrating the gradually varied
+    flow equation from the weir towards upstream (Chow 1959) [VERIFY]:
+
+        dh/dx = (S0 - S_f) / (1 - q^2 / (G h^3))
+
+    The weir sits at x = length on a bed of constant slope S0; the depth there
+    is crest_height + weir_head(q). Returns x (m, increasing downstream) and h.
+    """
+    h_weir = crest_height + weir_head(q, cd)
+
+    def rhs(x, h):
+        return (slope - friction_slope(h, q, n, width)) / (1.0 - q * q / (G * h**3))
+
+    x = np.linspace(length, 0.0, points)
+    sol = solve_ivp(rhs, (length, 0.0), [h_weir], t_eval=x, method="DOP853",
+                    rtol=1e-11, atol=1e-12)
+    return sol.t[::-1], sol.y[0][::-1]
+
+
+def backwater_length(x, h, h_normal, x_weir, threshold=0.05):
+    """Distance upstream of the weir over which h exceeds h_normal + threshold.
+
+    x increases downstream and h is assumed to rise towards the weir (an M1
+    profile), so the raised part is one stretch ending at the weir.
+    """
+    raised = np.asarray(h) - h_normal > threshold
+    if not raised.any():
+        return 0.0
+    if raised[0]:
+        raise ValueError("water is raised over the whole domain; make it longer")
+    first = np.argmax(raised)              # first raised point from upstream
+    x0, x1 = x[first - 1], x[first]
+    e0, e1 = h[first - 1] - h_normal - threshold, h[first] - h_normal - threshold
+    return x_weir - (x0 - e0 * (x1 - x0) / (e1 - e0))
+
+
+def level_pool_length(q, slope, n, crest_height, width=None, cd=1.0):
+    """Quick estimate: a flat pool at the weir's upstream level, cut off where
+    it meets the normal-depth surface, (crest + head - h_n) / S0."""
+    h_n = normal_depth(q, slope, n, width)
+    return (crest_height + weir_head(q, cd) - h_n) / slope

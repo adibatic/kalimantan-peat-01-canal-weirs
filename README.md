@@ -70,6 +70,17 @@ The canal is chosen for illustration, not measured: width 3 m, bed slope 2e-4, M
 | Pool emptying over a weir | H(t) = H0 / (1 + C √H0 t / 2L)² | derived from the weir law |
 | Pool kept below the crest | width × ∫ max(crest - z, 0) dx | geometry |
 
+## Checks
+
+A result is used only when all of these hold:
+
+- pytest passes.
+- Lake at rest over a bump: |q| and level error below 1e-12.
+- Volume balance: relative error below 1e-13.
+- Observed order on the steady benchmark: 1 ± 0.1 and 2 ± 0.1.
+- Dam break, 200 cells: L1 depth error below 6 mm (order 1) and 3 mm (order 2).
+- Steady runs stop at |dh/dt| below 1e-8 m/s; the solver's backwater length agrees with GVF within 1 %.
+
 ## Progress
 
 Self-paced. Target: the whole project in about a week.

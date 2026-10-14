@@ -87,7 +87,7 @@ Self-paced. Target: the whole project in about a week.
 
 - [x] Milestone 1: Foundation. The repository installs as a package, pytest runs, the rules are set.
 - [x] Milestone 2: Problem defined. Question, sources, exact answers and checks written before any code.
-- [ ] Milestone 3: Hydraulics. Manning, critical depth and the weir law, tested.
+- [x] Milestone 3: Hydraulics. Manning, critical depth and the weir law, tested.
 - [ ] Milestone 4: Exact answers. Ritter, a manufactured steady flow, the GVF profile and the pool drawdown, each tested against its equations.
 - [ ] Milestone 5: Solver. Well-balanced finite volumes, two schemes, weirs as boundaries, volume conserved.
 - [ ] Milestone 6: Verification. Observed orders 1 and 2, the dam break, the weir rating, the backwater length against GVF.

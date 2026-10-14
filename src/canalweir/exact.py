@@ -121,3 +121,14 @@ def level_pool_length(q, slope, n, crest_height, width=None, cd=1.0):
     it meets the normal-depth surface, (crest + head - h_n) / S0."""
     h_n = normal_depth(q, slope, n, width)
     return (crest_height + weir_head(q, cd) - h_n) / slope
+
+
+def drawdown_head(t, head0, pool_length, cd=1.0):
+    """Head over the crest of a flat pool emptying over a weir, no inflow.
+
+    Mass balance per metre of width: L dH/dt = -C H^(3/2), C = cd WEIR_COEFF.
+    Separating variables gives H(t) = H0 / (1 + C sqrt(H0) t / (2 L))^2.
+    """
+    c = cd * WEIR_COEFF
+    return head0 / (1.0 + c * np.sqrt(head0) * np.asarray(t, dtype=float)
+                    / (2.0 * pool_length)) ** 2

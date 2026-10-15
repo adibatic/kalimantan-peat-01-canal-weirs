@@ -137,5 +137,5 @@ Self-paced. Target: the whole project in about a week.
 - [x] Milestone 4: Exact answers. Ritter, a manufactured steady flow, the GVF profile and the pool drawdown, each tested against its equations.
 - [x] Milestone 5: Solver. Well-balanced finite volumes, two schemes, weirs as boundaries, volume conserved.
 - [x] Milestone 6: Verification. Observed orders 1 and 2, the dam break, the weir rating, the backwater length against GVF.
-- [ ] Milestone 7: The answer. Backwater lengths, outflow as the level falls, the dry-spell recession.
+- [x] Milestone 7: The answer. Backwater lengths, outflow as the level falls, the dry-spell recession.
 - [ ] Milestone 8: Package the result. Animation, CI badge, front page, v1.0 release.

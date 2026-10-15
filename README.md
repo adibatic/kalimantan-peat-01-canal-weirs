@@ -99,6 +99,34 @@ The dam break converges at order 1.00 (second-order scheme) and 0.71 (first orde
 ![Order of accuracy](results/figures/steady_convergence.png)
 ![Dam break](results/figures/dam_break.png)
 
+## Results
+
+Length of canal raised more than 5 cm above normal depth upstream of one weir (GVF; the level-pool estimate in brackets). Illustrative canal: 3 m wide, slope 2e-4, n = 0.03.
+
+| Discharge (m³/s) | Normal depth (m) | 0.5 m crest | 1.0 m crest | 1.5 m crest |
+|---:|---:|---:|---:|---:|
+| 0.1 | 0.215 | 1.90 km (1.79) | 4.45 km (4.29) | 6.96 km (6.79) |
+| 0.3 | 0.437 | 1.64 km (1.07) | 4.56 km (3.57) | 7.15 km (6.07) |
+| 0.6 | 0.696 | 0 (0.22) | 4.70 km (2.72) | 7.56 km (5.22) |
+| 1.2 | 1.135 | 0 (0) | 3.95 km (1.23) | 8.15 km (3.73) |
+
+The solver agrees with GVF within 5 m in all ten raised cases.
+
+![Backwater profile](results/figures/backwater_profile.png)
+![Backwater length](results/figures/backwater_length.png)
+![Recession](results/figures/recession.png)
+
+## Key finding
+
+In the illustrative canal:
+
+1. A weir only works if its crest plus its overflow head stands above the normal depth. A 0.5 m weir raises the water by more than 5 cm at 0.1 and 0.3 m³/s, but not at 0.6 m³/s or above.
+2. Above that, every metre of crest raises roughly 5 km of canal (about 1/slope): 4.0 to 4.7 km for a 1.0 m weir across all four flows.
+3. The level-pool estimate is within 6 % at 0.1 m³/s; at 0.3 to 1.2 m³/s the water is raised 1.2 to 3.2 times farther than it predicts.
+4. After the inflow stops, a 4 km reach with a 1.0 m weir keeps 7,204 m³ after three days (the exact pool below the crest is 7,200 m³); without the weir, 14 m³.
+
+These are properties of a model canal, not of any real canal, until it is surveyed and validated against field loggers.
+
 ## Progress
 
 Self-paced. Target: the whole project in about a week.

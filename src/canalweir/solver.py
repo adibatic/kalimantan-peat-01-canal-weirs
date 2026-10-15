@@ -101,3 +101,52 @@ class Model:
         self.inflow_volume = 0.0    # m^3 (m^2 per metre of width if width is None)
         self.outflow_volume = 0.0
         self.outflows = [0.0] * len(self.reaches)   # east-end discharge, last step
+
+    # ---------- fluxes ----------
+
+    @staticmethod
+    def _boundary(bc, h, u, level, t, q_feed):
+        """Mass and momentum flux through a boundary face (positive along +x)."""
+        kind = bc[0]
+        if kind == "wall":
+            return 0.0, 0.5 * G * h * h
+        if kind in ("inflow", "upstream"):
+            qb = q_feed if kind == "upstream" else (bc[1](t) if callable(bc[1]) else bc[1])
+            return qb, (qb * qb / h if h > DRY else 0.0) + 0.5 * G * h * h
+        if kind == "depth":
+            hb, qb = bc[1], h * u
+            return qb, qb * qb / hb + 0.5 * G * hb * hb
+        if kind == "weir":
+            qb = float(weir_unit_discharge(level, bc[1], bc[2] if len(bc) > 2 else 1.0))
+            return qb, (qb * qb / h if h > DRY else 0.0) + 0.5 * G * h * h
+        raise ValueError(f"unknown boundary condition {kind!r}")
+
+    def _fluxes(self, r, h, q, t, q_feed):
+        u = velocity(h, q)
+        level = h + r.bed
+        if self.order == 2:
+            sh, su, sl = limited_slopes(h), limited_slopes(u), limited_slopes(level)
+        else:
+            sh = su = sl = np.zeros_like(h)
+        # states at the west (w) and east (e) face of every cell
+        h_w, h_e = np.maximum(h - 0.5 * sh, 0.0), np.maximum(h + 0.5 * sh, 0.0)
+        u_w, u_e = u - 0.5 * su, u + 0.5 * su
+        z_w, z_e = level - 0.5 * sl - h_w, level + 0.5 * sl - h_e
+
+        # hydrostatic reconstruction at the interior faces
+        z_star = np.maximum(z_e[:-1], z_w[1:])
+        hl = np.maximum(h_e[:-1] + z_e[:-1] - z_star, 0.0)
+        hr = np.maximum(h_w[1:] + z_w[1:] - z_star, 0.0)
+        fh, fq = hll(hl, hl * u_e[:-1], hr, hr * u_w[1:])
+
+        n = r.cells
+        west_h, west_q = np.empty(n), np.empty(n)
+        east_h, east_q = np.empty(n), np.empty(n)
+        east_h[:-1], east_q[:-1] = fh, fq + 0.5 * G * (h_e[:-1] ** 2 - hl**2)
+        west_h[1:], west_q[1:] = fh, fq + 0.5 * G * (h_w[1:] ** 2 - hr**2)
+        west_h[0], west_q[0] = self._boundary(r.west, h_w[0], u_w[0],
+                                              h_w[0] + z_w[0], t, q_feed)
+        east_h[-1], east_q[-1] = self._boundary(r.east, h_e[-1], u_e[-1],
+                                                h_e[-1] + z_e[-1], t, None)
+        source = -G * 0.5 * (h_w + h_e) * (z_e - z_w)   # zero when order == 1
+        return west_h, west_q, east_h, east_q, source

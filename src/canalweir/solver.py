@@ -150,3 +150,83 @@ class Model:
                                                 h_e[-1] + z_e[-1], t, None)
         source = -G * 0.5 * (h_w + h_e) * (z_e - z_w)   # zero when order == 1
         return west_h, west_q, east_h, east_q, source
+
+    # ---------- time stepping ----------
+
+    def _stage(self, hs, qs, t, dt):
+        """One forward-Euler stage for every reach, upstream to downstream."""
+        new_h, new_q, ends = [], [], []
+        q_feed = 0.0
+        for r, h, q in zip(self.reaches, hs, qs):
+            west_h, west_q, east_h, east_q, source = self._fluxes(r, h, q, t, q_feed)
+            h1 = h - dt / r.dx * (east_h - west_h)
+            q1 = q - dt / r.dx * (east_q - west_q - source)
+            if r.manning_n > 0.0:
+                hp = np.maximum(h1, DRY)
+                radius = hydraulic_radius(hp, r.width)
+                k = G * r.manning_n**2 * np.abs(q) / (hp * radius ** (4.0 / 3.0))
+                q1 = q1 / (1.0 + dt * k)
+            q1 = np.where(h1 > DRY, q1, 0.0)
+            new_h.append(np.maximum(h1, 0.0))
+            new_q.append(q1)
+            ends.append((west_h[0], east_h[-1]))
+            q_feed = east_h[-1]
+        return new_h, new_q, ends
+
+    def max_wave_speed(self):
+        speeds = [np.max((np.abs(velocity(h, q)) + np.sqrt(G * h)) / r.dx)
+                  for r, h, q in zip(self.reaches, self.h, self.q)]
+        return max(speeds)
+
+    def stable_dt(self):
+        return self.cfl / self.max_wave_speed()
+
+    def _width_factor(self, r):
+        return 1.0 if r.width is None else r.width
+
+    def step(self, dt):
+        """Advance by dt; returns the largest change rate of h (m/s)."""
+        h0, q0 = self.h, self.q
+        h1, q1, ends1 = self._stage(h0, q0, self.t, dt)
+        if self.order == 1:
+            h_new, q_new, w = h1, q1, [(1.0, ends1)]
+        else:
+            h2, q2, ends2 = self._stage(h1, q1, self.t + dt, dt)
+            h_new = [0.5 * (a + b) for a, b in zip(h0, h2)]
+            q_new = [0.5 * (a + b) for a, b in zip(q0, q2)]
+            w = [(0.5, ends1), (0.5, ends2)]
+        widths = [self._width_factor(r) for r in self.reaches]
+        self.outflows = [sum(weight * ends[k][1] for weight, ends in w) * widths[k]
+                         for k in range(len(self.reaches))]
+        inflow = sum(weight * ends[0][0] for weight, ends in w) * widths[0]
+        self.inflow_volume += dt * inflow
+        self.outflow_volume += dt * self.outflows[-1]
+        rate = max(np.max(np.abs(a - b)) for a, b in zip(h_new, h0)) / dt
+        self.h, self.q = h_new, q_new
+        self.t += dt
+        return rate
+
+    def run(self, t_end, callback=None, every=None):
+        """Advance to t_end. callback(model) runs every `every` seconds."""
+        next_out = self.t if every is not None else None
+        while self.t < t_end - 1e-12:
+            if callback is not None and next_out is not None and self.t >= next_out - 1e-9:
+                callback(self)
+                next_out += every
+            self.step(min(self.stable_dt(), t_end - self.t))
+        if callback is not None:
+            callback(self)
+
+    def run_to_steady(self, tol=1e-9, t_max=1e7):
+        """Advance until every |dh/dt| is below tol (m/s). Returns the time."""
+        while self.t < t_max:
+            if self.step(self.stable_dt()) < tol:
+                return self.t
+        raise RuntimeError(f"no steady state before t = {t_max} s")
+
+    # ---------- diagnostics ----------
+
+    def volume(self):
+        """Stored water volume, m^3 (m^2 per metre of width for wide canals)."""
+        return sum(np.sum(h) * r.dx * self._width_factor(r)
+                   for r, h in zip(self.reaches, self.h))

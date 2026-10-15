@@ -65,3 +65,39 @@ def hll(h_l, q_l, h_r, q_r):
     fh = np.where(s_l >= 0.0, fh_l, np.where(s_r <= 0.0, fh_r, mid_h))
     fq = np.where(s_l >= 0.0, fq_l, np.where(s_r <= 0.0, fq_r, mid_q))
     return fh, fq
+
+
+@dataclass
+class Reach:
+    """A straight rectangular canal reach divided into equal cells."""
+
+    length: float                 # m
+    cells: int
+    bed: np.ndarray               # bed elevation at the cell centres, m
+    manning_n: float = 0.0        # s/m^(1/3); 0 means frictionless
+    width: float | None = None    # m; None means a wide canal (R = h)
+    west: tuple = ("wall",)
+    east: tuple = ("wall",)
+
+    def __post_init__(self):
+        self.dx = self.length / self.cells
+        self.x = (np.arange(self.cells) + 0.5) * self.dx
+        self.bed = np.asarray(self.bed, dtype=float)
+        if self.bed.shape != (self.cells,):
+            raise ValueError("bed needs one value per cell")
+
+
+class Model:
+    """Reaches in series, advanced together with one time step."""
+
+    def __init__(self, reaches, depths, discharges, order=2, cfl=0.45):
+        if order not in (1, 2):
+            raise ValueError("order must be 1 or 2")
+        self.reaches = list(reaches)
+        self.h = [np.array(d, dtype=float) for d in depths]
+        self.q = [np.array(d, dtype=float) for d in discharges]
+        self.order, self.cfl = order, cfl
+        self.t = 0.0
+        self.inflow_volume = 0.0    # m^3 (m^2 per metre of width if width is None)
+        self.outflow_volume = 0.0
+        self.outflows = [0.0] * len(self.reaches)   # east-end discharge, last step

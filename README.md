@@ -81,6 +81,24 @@ A result is used only when all of these hold:
 - Dam break, 200 cells: L1 depth error below 6 mm (order 1) and 3 mm (order 2).
 - Steady runs stop at |dh/dt| below 1e-8 m/s; the solver's backwater length agrees with GVF within 1 %.
 
+## Verification
+
+Every check compares the solver with an exact answer, never with itself. pytest runs all of them.
+
+| Check | Exact answer | Result | Criterion |
+|---|---|---|---|
+| Lake at rest over a bump | velocity stays 0 | below 1e-12 m²/s, both schemes | < 1e-12 |
+| Volume, closed canal and two reaches with weirs | stored change = inflow - outflow | relative error below 1e-13 | < 1e-13 |
+| Order of accuracy, steady flow with friction | manufactured depth h(x) | observed order 0.999 and 2.000 | 1 ± 0.1, 2 ± 0.1 |
+| Weir fails onto a dry bed | Ritter's solution | L1 error 2.5 mm (order 2), 5.2 mm (order 1), 200 cells | < 3 mm, < 6 mm |
+| Steady flow over a weir | outflow = inflow, head = rating curve | outflow within 1e-8 | 1e-8 |
+| Backwater length | GVF integration | within 1 % | < 1 % |
+
+The dam break converges at order 1.00 (second-order scheme) and 0.71 (first order), as expected for a solution with a kink and a dry front. Its volume drifts by 1e-16.
+
+![Order of accuracy](results/figures/steady_convergence.png)
+![Dam break](results/figures/dam_break.png)
+
 ## Progress
 
 Self-paced. Target: the whole project in about a week.

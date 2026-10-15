@@ -17,7 +17,7 @@ from canalweir.hydraulics import normal_depth, weir_head
 from canalweir.solver import Model, Reach
 
 REACHES, REACH_LENGTH, CREST, CELL = 3, 3000.0, 0.8, 50.0
-DAYS, FRAMES = 6.0, 150
+DAYS, FRAMES = 3.0, 90
 DAY = 86400.0
 
 
